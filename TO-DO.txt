@@ -1,0 +1,17 @@
+Atributos carro:
+    - Nome, renavan, categoria, ano de fabricação, quantidade disponível e preço;
+    - Categorias: econômico, intermediário e executivo;
+
+Funcionalidades: 
+    - Autenticação (login e senha);
+    - Adicionar, deletar (pelo nome), listar (por categoria ou geral, em ordem alfabética),
+    pesquisar (nome ou renavan), editar atributos;
+    - Atualizar listagem para o cliente sempre que os dados forem modificados;
+    - Exibir quantidade de carros armazenados;
+    - Comprar carro.
+
+Usuário: Clientes ou funcionários.
+    - Clientes: podem listar, pesquisar, exibir quantidade e comprar carros;
+    - Funcionários: podem fazer tudo que o cliente faz, pode adicionar, apagar e editar atributos dos carros.
+
+serviços de aplicação/autenticação juntamente com seus bancos devem ser separados.
