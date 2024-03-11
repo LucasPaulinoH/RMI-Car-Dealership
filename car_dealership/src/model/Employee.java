@@ -1,6 +1,6 @@
 package model;
 
-import types.AccountType;
+import types.Types.AccountType;
 
 public class Employee extends User {
     private String role;

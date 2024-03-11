@@ -1,4 +1,4 @@
-package dto;
+package dto.account;
 
 import java.io.Serializable;
 

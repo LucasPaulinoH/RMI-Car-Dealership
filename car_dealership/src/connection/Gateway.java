@@ -7,9 +7,8 @@ import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import communication.GatewayThread;
+import communication.gateway.GatewayThread;
 import constants.Constants;
-import dto.LoginDTO;
 import services.authentication.AuthInterface;
 import services.authentication.AuthService;
 
@@ -30,7 +29,7 @@ public class Gateway {
         try {
             new AuthService();
             Registry authRegistry = LocateRegistry.getRegistry(Constants.AUTH_REGISTRY_PORT);
-            var remoteClientStub = (AuthInterface) authRegistry.lookup("AuthDatabase");
+            var remoteClientStub = (AuthInterface) authRegistry.lookup(Constants.AUTH_SERVICE_NAME);
 
             try {
                 serverSocket = new ServerSocket(serverPort);

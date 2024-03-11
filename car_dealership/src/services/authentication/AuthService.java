@@ -21,7 +21,7 @@ public class AuthService {
             LocateRegistry.createRegistry(Constants.AUTH_REGISTRY_PORT);
             Registry registry = LocateRegistry.getRegistry(Constants.AUTH_REGISTRY_PORT);
 
-            registry.bind("AuthDatabase", skeleton);
+            registry.bind(Constants.AUTH_SERVICE_NAME, skeleton);
         } catch (RemoteException | AlreadyBoundException e) {
             e.printStackTrace();
         }

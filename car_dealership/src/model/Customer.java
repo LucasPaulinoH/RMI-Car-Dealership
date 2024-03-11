@@ -1,6 +1,6 @@
 package model;
 
-import types.AccountType;
+import types.Types.AccountType;
 
 public class Customer extends User {
     public Customer(String login, String password) {

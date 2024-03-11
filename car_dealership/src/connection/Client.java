@@ -3,7 +3,8 @@ package connection;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import communication.ClientThread;
+
+import communication.client.ClientThread;
 import constants.Constants;
 
 public class Client {
