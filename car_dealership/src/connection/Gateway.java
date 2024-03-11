@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import communication.GatewayThread;
 import constants.Constants;
 import dto.LoginDTO;
 import services.authentication.AuthInterface;
@@ -41,23 +42,8 @@ public class Gateway {
 
                     objectInputStream = new ObjectInputStream(clientConnectionSocket.getInputStream());
 
-                    int loginOrRegisterSelected = objectInputStream.readInt();
-
-                    switch (loginOrRegisterSelected) {
-                        case 1:
-                            LoginDTO loginDTO = (LoginDTO) objectInputStream.readObject();
-                            remoteClientStub.authenticate(loginDTO.getLogin(), loginDTO.getPassword());
-
-                            break;
-                        case 2:
-
-                            break;
-                        case 0:
-
-                            break;
-                    }
-
-                    // remoteClientStub.authenticate(login, password);
+                    var gatewayThread = new GatewayThread(objectInputStream, remoteClientStub, clientConnectionSocket);
+                    gatewayThread.start();
                 }
             } catch (IOException e) {
                 e.printStackTrace();

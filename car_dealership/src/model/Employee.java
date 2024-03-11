@@ -1,10 +1,12 @@
 package model;
 
+import types.AccountType;
+
 public class Employee extends User {
     private String role;
 
-    public Employee(String login, String password, String fullname, String cpf, String phone, String role) {
-        super(login, password, fullname, cpf, phone);
+    public Employee(String login, String password, String role) {
+        super(login, password, AccountType.EMPLOYEE);
         this.role = role;
     }
 

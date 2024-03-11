@@ -3,6 +3,11 @@ package services.authentication;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import dto.LoginDTO;
+import dto.RegisterDTO;
+import model.User;
+
 public interface AuthInterface extends Remote {
-    void authenticate(String login, String password) throws RemoteException;
+    User authenticate(LoginDTO loginDTO) throws RemoteException;
+    void register(RegisterDTO registerDTO) throws RemoteException;
 }

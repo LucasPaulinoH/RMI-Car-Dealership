@@ -1,18 +1,26 @@
 package model;
 
 import java.io.Serializable;
+import java.util.UUID;
+
+import types.AccountType;
 
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String login, password, fullname, cpf, phone;
+    private UUID id;
+    private String login, password;
+    private AccountType accountType;
 
-    public User(String login, String password, String fullname, String cpf, String phone) {
+    public User(String login, String password, AccountType accountType) {
+        this.id = UUID.randomUUID();
         this.login = login;
         this.password = password;
-        this.fullname = fullname;
-        this.cpf = cpf;
-        this.phone = phone;
+        this.accountType = accountType;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public String getLogin() {
@@ -31,27 +39,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getFullname() {
-        return fullname;
+    public AccountType getAccountType() {
+        return accountType;
     }
 
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setAccountType(AccountType accountType) {
+        this.accountType = accountType;
     }
 }
