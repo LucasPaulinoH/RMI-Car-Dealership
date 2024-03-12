@@ -43,11 +43,16 @@ public class GatewayThread extends Thread {
 
                 switch (loginOrRegisterSelected) {
                     case 1:
+                        User loggedUser = null;
+
                         LoginDTO loginDTO = (LoginDTO) objectInputStream.readObject();
-                        User loggedUser = authStub.authenticate(loginDTO);
+                        loggedUser = authStub.authenticate(loginDTO);
 
                         objectOutputStream.writeObject(loggedUser);
                         objectOutputStream.flush();
+
+                        if (loggedUser == null)
+                            continue;
 
                         new ApplicationService();
                         Registry appRegistry = LocateRegistry.getRegistry(Constants.APP_REGISTRY_PORT);
@@ -109,8 +114,7 @@ public class GatewayThread extends Thread {
                                     break;
 
                                 case 0:
-                                    break;
-
+                                    continue;
                                 default:
                                     break;
                             }

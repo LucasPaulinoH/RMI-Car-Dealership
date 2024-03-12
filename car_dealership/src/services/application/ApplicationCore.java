@@ -15,6 +15,17 @@ public class ApplicationCore implements ApplicationInterface {
 
     public ApplicationCore() throws RemoteException {
         this.postCar(new Car("Lancer", CarCategory.INTERMEDIATE, "12345678910", "2016", 60000, 2));
+        this.postCar(new Car("Civic", CarCategory.INTERMEDIATE, "12345678911", "2018", 80000, 3));
+        this.postCar(new Car("Corolla", CarCategory.INTERMEDIATE, "12345678912", "2017", 75000, 1));
+        this.postCar(new Car("Gol", CarCategory.ECONOMIC, "12345678913", "2019", 45000, 5));
+        this.postCar(new Car("Onix", CarCategory.ECONOMIC, "12345678914", "2020", 50000, 4));
+        this.postCar(new Car("Fusion", CarCategory.EXECUTIVE, "12345678915", "2019", 100000, 2));
+        this.postCar(new Car("Camry", CarCategory.EXECUTIVE, "12345678916", "2021", 120000, 1));
+        this.postCar(new Car("Focus", CarCategory.INTERMEDIATE, "12345678917", "2018", 70000, 3));
+        this.postCar(new Car("Fit", CarCategory.ECONOMIC, "12345678918", "2017", 55000, 2));
+        this.postCar(new Car("Sentra", CarCategory.INTERMEDIATE, "12345678919", "2018", 75000, 2));
+        this.postCar(new Car("A4", CarCategory.EXECUTIVE, "12345678920", "2019", 90000, 1));
+        this.postCar(new Car("Fiesta", CarCategory.ECONOMIC, "12345678921", "2020", 48000, 3));
     }
 
     @Override

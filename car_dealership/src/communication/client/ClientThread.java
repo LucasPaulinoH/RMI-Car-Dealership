@@ -44,7 +44,17 @@ public class ClientThread extends Thread {
                 TerminalPrints.clearConsole();
                 switch (loginOrRegister) {
                     case 1:
-                        executeLoginAttempt();
+                        System.out.print("Login > ");
+                        String login = sc.next();
+
+                        System.out.print("Password > ");
+                        String password = sc.next();
+                        password = PasswordHasher.hashPassword(password);
+
+                        var loginDTO = new LoginDTO(login, password);
+                        objectOutputStream.writeObject(loginDTO);
+                        objectOutputStream.flush();
+
                         User loggedUser = (User) objectInputStream.readObject();
 
                         if (loggedUser == null) {
@@ -53,6 +63,7 @@ public class ClientThread extends Thread {
                         }
 
                         TerminalPrints.clearConsole();
+
                         LoggedUserProcess loggedUserProcess;
                         if (loggedUser instanceof Employee) {
                             loggedUserProcess = new LoggedUserProcess(loggedUser, AccountType.EMPLOYEE,
@@ -80,23 +91,6 @@ public class ClientThread extends Thread {
             objectOutputStream.close();
             serverConnectionSocket.close();
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void executeLoginAttempt() {
-        System.out.print("Login > ");
-        String login = sc.next();
-
-        System.out.print("Password > ");
-        String password = sc.next();
-        password = PasswordHasher.hashPassword(password);
-
-        try {
-            var loginDTO = new LoginDTO(login, password);
-            objectOutputStream.writeObject(loginDTO);
-            objectOutputStream.flush();
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }

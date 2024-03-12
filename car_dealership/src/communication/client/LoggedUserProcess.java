@@ -93,8 +93,6 @@ public class LoggedUserProcess {
                         objectOutputStream.writeObject(searchCategory);
                         objectOutputStream.flush();
 
-                        TerminalPrints.clearConsole();
-
                         ArrayList<Car> searchedCars = (ArrayList<Car>) objectInputStream.readObject();
 
                         if (searchedCars.size() == 0) {
@@ -108,7 +106,6 @@ public class LoggedUserProcess {
                         continue;
                     case 2:
                         searchCarRequest(objectOutputStream);
-                        TerminalPrints.clearConsole();
 
                         try {
                             Car foundedUser = (Car) objectInputStream.readObject();
@@ -123,7 +120,7 @@ public class LoggedUserProcess {
 
                         continue;
                     case 3:
-                        TerminalPrints.clearConsole();
+
                         int availableCarsQuantity = objectInputStream.readInt();
                         System.out.println("Available cars: " + availableCarsQuantity);
                         continue;
@@ -137,8 +134,6 @@ public class LoggedUserProcess {
                             objectOutputStream.writeObject(newCar);
                             objectOutputStream.flush();
 
-                            TerminalPrints.clearConsole();
-
                             System.out.println(newCar.getName() + " successfully added.");
                             continue;
                         } else {
@@ -150,8 +145,6 @@ public class LoggedUserProcess {
                             deleteCarRequest(objectOutputStream);
 
                             boolean hasDeleted = (boolean) objectInputStream.readBoolean();
-
-                            TerminalPrints.clearConsole();
 
                             if (hasDeleted)
                                 System.out.println("Successfully deleted.");
@@ -237,6 +230,8 @@ public class LoggedUserProcess {
         System.out.println("Quantity > ");
         int quantity = sc.nextInt();
 
+
+
         return new Car(newCarName, category, renavam, manufactureYear, price, quantity);
     }
 
@@ -271,6 +266,7 @@ public class LoggedUserProcess {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     private void searchCarRequest(ObjectOutputStream objectOutputStream) {
