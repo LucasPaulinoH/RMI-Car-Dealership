@@ -33,15 +33,27 @@ public class ApplicationCore implements ApplicationInterface {
     }
 
     @Override
-    public void deleteCar(String carName) throws RemoteException {
-        Car iterableCar;
+    public boolean deleteCar(int deletionType, String carName) throws RemoteException {
+        Car iterableCar = null;
         for (int i = 0; i < registeredCars.size(); i++) {
             iterableCar = registeredCars.get(i);
+
             if (iterableCar.getName().equalsIgnoreCase(carName)) {
-                System.out.println(iterableCar.getName() + " has been deleted.");
-                registeredCars.remove(i);
+                if (deletionType == 1) {
+                    iterableCar.setQuantity(iterableCar.getQuantity() - 1);
+                    totalCarQuantity--;
+                } else {
+                    totalCarQuantity -= iterableCar.getQuantity();
+                    registeredCars.remove(i);
+                }
+
+                System.out.println(carName + " successfully deleted.");
+                return true;
             }
         }
+
+        System.out.println(carName + " wasn't found.");
+        return false;
     }
 
     @Override

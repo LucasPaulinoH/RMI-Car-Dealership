@@ -61,8 +61,12 @@ public class GatewayThread extends Thread {
                                     appStub.postCar(createdCar);
                                     break;
                                 case 2:
+                                    int deletionType = objectInputStream.readInt();
                                     String deletableCarName = objectInputStream.readUTF();
-                                    appStub.deleteCar(deletableCarName);
+
+                                    boolean hasDeleted = appStub.deleteCar(deletionType, deletableCarName);
+                                    objectOutputStream.writeBoolean(hasDeleted);
+                                    objectOutputStream.flush();
                                     break;
                                 case 3:
 

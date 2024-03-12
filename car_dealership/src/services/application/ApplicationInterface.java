@@ -9,7 +9,7 @@ import types.Types.CarSearchType;
 public interface ApplicationInterface extends Remote {
     void postCar(Car newCar) throws RemoteException;
 
-    void deleteCar(String carName) throws RemoteException;
+    boolean deleteCar(int deletionType, String carName) throws RemoteException;
 
     Car getCar(String searchTerm, CarSearchType carSearchType) throws RemoteException;
 

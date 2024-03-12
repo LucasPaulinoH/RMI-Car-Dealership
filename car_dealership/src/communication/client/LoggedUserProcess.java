@@ -99,12 +99,41 @@ public class LoggedUserProcess {
 
                         continue;
                     case 2:
+                        int deletionType;
+
+                        while (true) {
+                            System.out.println("Deletion type (1 - unity, 2 - all unities) > ");
+                            deletionType = sc.nextInt();
+
+                            switch (deletionType) {
+                                case 1:
+                                    break;
+                                case 2:
+                                    break;
+                                default:
+                                    System.out.println(
+                                            "Invalid deletion type. Type 1 to delete a single instance or 2 to delete all registries.");
+                                    continue;
+                            }
+
+                            break;
+                        }
+
                         System.out.println("Car name > ");
                         String deletedCarName = sc.next();
 
+                        objectOutputStream.writeInt(deletionType);
                         objectOutputStream.writeUTF(deletedCarName);
                         objectOutputStream.flush();
-                        break;
+
+                        boolean hasDeleted = (boolean) objectInputStream.readBoolean();
+
+                        if (hasDeleted)
+                            System.out.println(deletedCarName + " successfully deleted.");
+                        else
+                            System.out.println(deletedCarName + " is not registered.");
+
+                        continue;
                     case 3:
 
                         break;
@@ -156,17 +185,15 @@ public class LoggedUserProcess {
                         continue;
                     case 6:
                         int availableCarsQuantity = objectInputStream.readInt();
-                        System.out.println(availableCarsQuantity);
-                        break;
+                        System.out.println("Available cars: " + availableCarsQuantity);
 
+                        continue;
                     case 7:
 
                         break;
 
                     case 0:
-
                         break;
-
                     default:
                         continue;
                 }
