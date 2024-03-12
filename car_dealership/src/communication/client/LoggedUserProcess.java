@@ -3,6 +3,7 @@ package communication.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import model.Car;
@@ -25,138 +26,62 @@ public class LoggedUserProcess {
         this.accountType = accountType;
         this.objectInputStream = objectInputStream;
         this.objectOutputStream = objectOutputStream;
-        this.execute();
+        this.executeLoggedUserProcess();
     }
 
-    private void execute() {
-        switch (accountType) {
-            case CUSTOMER:
-                executeCustomerProcess();
-                break;
-            case EMPLOYEE:
-                executeEmployeeProcess();
-                break;
-        }
-    }
-
-    private void executeCustomerProcess() {
-        System.out.println("Executing customer process.");
-    }
-
-    private void executeEmployeeProcess() {
+    private void executeLoggedUserProcess() {
         try {
             while (true) {
-                TerminalPrints.printLoggedEmployeeOptions();
+                if (accountType == AccountType.CUSTOMER)
+                    TerminalPrints.printLoggedCustomerOptions();
+                else
+                    TerminalPrints.printLoggedEmployeeOptions();
+
                 int selectedOption = sc.nextInt();
 
                 objectOutputStream.writeInt(selectedOption);
                 objectOutputStream.flush();
 
+                TerminalPrints.clearConsole();
                 switch (selectedOption) {
                     case 1:
-                        System.out.println("Car name > ");
-                        String newCarName = sc.next();
+                        int carListSearchTypeInt;
+                        CarSearchType carListSearchType = null;
+                        CarCategory searchCategory = null;
 
-                        int categoryInt;
-                        CarCategory category = null;
-                        while (category == null) {
-                            System.out.println("Category (1 - economic, 2 - intermediate, 3 - executive) > ");
-                            categoryInt = sc.nextInt();
+                        while (carListSearchType == null) {
+                            System.out.println("Search type (1 - general, 2 - by category) > ");
+                            carListSearchTypeInt = sc.nextInt();
 
-                            switch (categoryInt) {
+                            switch (carListSearchTypeInt) {
                                 case 1:
-                                    category = CarCategory.ECONOMIC;
+                                    carListSearchType = CarSearchType.GENERAL;
                                     break;
                                 case 2:
-                                    category = CarCategory.INTERMEDIATE;
+                                    carListSearchType = CarSearchType.CATEGORY;
+
+                                    while (searchCategory == null) {
+                                        System.out
+                                                .println("Category (1 - economic, 2 - intermediate, 3 - executive) > ");
+                                        carListSearchTypeInt = sc.nextInt();
+
+                                        switch (carListSearchTypeInt) {
+                                            case 1:
+                                                searchCategory = CarCategory.ECONOMIC;
+                                                break;
+                                            case 2:
+                                                searchCategory = CarCategory.INTERMEDIATE;
+                                                break;
+                                            case 3:
+                                                searchCategory = CarCategory.EXECUTIVE;
+                                                break;
+                                            default:
+                                                System.out.println(
+                                                        "Invalid category selected. Try 1 for Economic, 2 for Intermediate and 3 for Executive.");
+                                                continue;
+                                        }
+                                    }
                                     break;
-                                case 3:
-                                    category = CarCategory.EXECUTIVE;
-                                    break;
-                                default:
-                                    System.out.println(
-                                            "Invalid category selected. Try 1 for Economic, 2 for Intermediate and 3 for Executive.");
-                                    continue;
-                            }
-                        }
-
-                        System.out.println("Renavam > ");
-                        String renavam = sc.next();
-
-                        System.out.println("Manufacture year > ");
-                        String manufactureYear = sc.next();
-
-                        System.out.println("Price (R$) > ");
-                        double price = sc.nextDouble();
-
-                        System.out.println("Quantity > ");
-                        int quantity = sc.nextInt();
-
-                        Car newCar = new Car(newCarName, category, renavam, manufactureYear, price, quantity);
-
-                        objectOutputStream.writeObject(newCar);
-                        objectOutputStream.flush();
-
-                        continue;
-                    case 2:
-                        int deletionType;
-
-                        while (true) {
-                            System.out.println("Deletion type (1 - unity, 2 - all unities) > ");
-                            deletionType = sc.nextInt();
-
-                            switch (deletionType) {
-                                case 1:
-                                    break;
-                                case 2:
-                                    break;
-                                default:
-                                    System.out.println(
-                                            "Invalid deletion type. Type 1 to delete a single instance or 2 to delete all registries.");
-                                    continue;
-                            }
-
-                            break;
-                        }
-
-                        System.out.println("Car name > ");
-                        String deletedCarName = sc.next();
-
-                        objectOutputStream.writeInt(deletionType);
-                        objectOutputStream.writeUTF(deletedCarName);
-                        objectOutputStream.flush();
-
-                        boolean hasDeleted = (boolean) objectInputStream.readBoolean();
-
-                        if (hasDeleted)
-                            System.out.println(deletedCarName + " successfully deleted.");
-                        else
-                            System.out.println(deletedCarName + " is not registered.");
-
-                        continue;
-                    case 3:
-
-                        break;
-
-                    case 4:
-                        break;
-
-                    case 5:
-                        int searchTypeInt;
-                        CarSearchType carSearchType = null;
-
-                        while (carSearchType == null) {
-                            System.out.println("Search type (1 - name, 2 - renavam) > ");
-                            searchTypeInt = sc.nextInt();
-
-                            switch (searchTypeInt) {
-                                case 1:
-                                    carSearchType = CarSearchType.NAME;
-                                    break;
-                                case 2:
-                                    carSearchType = CarSearchType.RENAVAM;
-                                    break;
-
                                 default:
                                     System.out.println(
                                             "Invalid search type selected. Try 1 for Name, 2 for Renavame.");
@@ -164,12 +89,26 @@ public class LoggedUserProcess {
                             }
                         }
 
-                        System.out.println("Search > ");
-                        String searchTerm = sc.next();
-
-                        objectOutputStream.writeObject(carSearchType);
-                        objectOutputStream.writeUTF(searchTerm);
+                        objectOutputStream.writeObject(carListSearchType);
+                        objectOutputStream.writeObject(searchCategory);
                         objectOutputStream.flush();
+
+                        TerminalPrints.clearConsole();
+
+                        ArrayList<Car> searchedCars = (ArrayList<Car>) objectInputStream.readObject();
+
+                        if (searchedCars.size() == 0) {
+                            System.out.println("Car list is empty.");
+                        } else {
+                            for (Car iterableCar : searchedCars) {
+                                System.out.println(iterableCar.toString());
+                            }
+                        }
+
+                        continue;
+                    case 2:
+                        searchCarRequest(objectOutputStream);
+                        TerminalPrints.clearConsole();
 
                         try {
                             Car foundedUser = (Car) objectInputStream.readObject();
@@ -183,25 +122,189 @@ public class LoggedUserProcess {
                         }
 
                         continue;
-                    case 6:
+                    case 3:
+                        TerminalPrints.clearConsole();
                         int availableCarsQuantity = objectInputStream.readInt();
                         System.out.println("Available cars: " + availableCarsQuantity);
-
                         continue;
-                    case 7:
+                    case 4:
 
                         break;
+                    case 5:
+                        if (accountType == AccountType.EMPLOYEE) {
+                            Car newCar = addCarRequest();
+
+                            objectOutputStream.writeObject(newCar);
+                            objectOutputStream.flush();
+
+                            TerminalPrints.clearConsole();
+
+                            System.out.println(newCar.getName() + " successfully added.");
+                            continue;
+                        } else {
+                            System.out.println("Invalid option selected.");
+                            continue;
+                        }
+                    case 6:
+                        if (accountType == AccountType.EMPLOYEE) {
+                            deleteCarRequest(objectOutputStream);
+
+                            boolean hasDeleted = (boolean) objectInputStream.readBoolean();
+
+                            TerminalPrints.clearConsole();
+
+                            if (hasDeleted)
+                                System.out.println("Successfully deleted.");
+                            else
+                                System.out.println("Given car is not registered.");
+
+                            continue;
+                        } else {
+                            System.out.println("Invalid option selected.");
+                            continue;
+                        }
+                    case 7:
+                        if (accountType == AccountType.EMPLOYEE) {
+                            searchCarRequest(objectOutputStream);
+
+                            int foundedCarIndex = objectInputStream.readInt();
+
+                            if (foundedCarIndex == -1) {
+                                System.out.println("Searched car is not registered.");
+                                continue;
+                            }
+
+                            Car updatedCar = addCarRequest();
+                            objectOutputStream.writeObject(updatedCar);
+                            objectOutputStream.flush();
+                        } else {
+                            System.out.println("Invalid option selected.");
+                            continue;
+                        }
+
+                        continue;
 
                     case 0:
                         break;
                     default:
+                        System.out.println("Invalid option selected.");
                         continue;
                 }
                 break;
             }
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private Car addCarRequest() {
+        System.out.print("Car name > ");
+        String newCarName = sc.next();
+
+        int categoryInt;
+        CarCategory category = null;
+        while (category == null) {
+            System.out.print("Category (1 - economic, 2 - intermediate, 3 - executive) > ");
+            categoryInt = sc.nextInt();
+
+            switch (categoryInt) {
+                case 1:
+                    category = CarCategory.ECONOMIC;
+                    break;
+                case 2:
+                    category = CarCategory.INTERMEDIATE;
+                    break;
+                case 3:
+                    category = CarCategory.EXECUTIVE;
+                    break;
+                default:
+                    System.out.println(
+                            "Invalid category selected. Try 1 for Economic, 2 for Intermediate and 3 for Executive.");
+                    continue;
+            }
+        }
+
+        System.out.print("Renavam > ");
+        String renavam = sc.next();
+
+        System.out.println("Manufacture year > ");
+        String manufactureYear = sc.next();
+
+        System.out.println("Price (R$) > ");
+        double price = sc.nextDouble();
+
+        System.out.println("Quantity > ");
+        int quantity = sc.nextInt();
+
+        return new Car(newCarName, category, renavam, manufactureYear, price, quantity);
+    }
+
+    private void deleteCarRequest(ObjectOutputStream objectOutputStream) {
+        int deletionType;
+
+        while (true) {
+            System.out.println("Deletion type (1 - unity, 2 - all unities) > ");
+            deletionType = sc.nextInt();
+
+            switch (deletionType) {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                default:
+                    System.out.println(
+                            "Invalid deletion type. Type 1 to delete a single instance or 2 to delete all registries.");
+                    continue;
+            }
+
+            break;
+        }
+
+        System.out.print("Car name > ");
+        String deletedCarName = sc.next();
+
+        try {
+            objectOutputStream.writeInt(deletionType);
+            objectOutputStream.writeUTF(deletedCarName);
+            objectOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void searchCarRequest(ObjectOutputStream objectOutputStream) {
+        int searchTypeInt;
+        CarSearchType carSearchType = null;
+
+        while (carSearchType == null) {
+            System.out.println("Search type (1 - name, 2 - renavam) > ");
+            searchTypeInt = sc.nextInt();
+
+            switch (searchTypeInt) {
+                case 1:
+                    carSearchType = CarSearchType.NAME;
+                    break;
+                case 2:
+                    carSearchType = CarSearchType.RENAVAM;
+                    break;
+
+                default:
+                    System.out.println(
+                            "Invalid search type selected. Try 1 for Name, 2 for Renavame.");
+                    continue;
+            }
+        }
+
+        System.out.print("Search > ");
+        String searchTerm = sc.next();
+
+        try {
+            objectOutputStream.writeObject(carSearchType);
+            objectOutputStream.writeUTF(searchTerm);
+            objectOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

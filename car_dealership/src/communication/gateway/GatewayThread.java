@@ -16,7 +16,9 @@ import model.User;
 import services.application.ApplicationInterface;
 import services.application.ApplicationService;
 import services.authentication.AuthInterface;
+import types.Types.CarCategory;
 import types.Types.CarSearchType;
+import java.util.ArrayList;
 
 public class GatewayThread extends Thread {
     private ObjectInputStream objectInputStream;
@@ -57,24 +59,14 @@ public class GatewayThread extends Thread {
 
                             switch (selectedOption) {
                                 case 1:
-                                    Car createdCar = (Car) objectInputStream.readObject();
-                                    appStub.postCar(createdCar);
-                                    break;
-                                case 2:
-                                    int deletionType = objectInputStream.readInt();
-                                    String deletableCarName = objectInputStream.readUTF();
+                                    CarSearchType searchType = (CarSearchType) objectInputStream.readObject();
+                                    CarCategory searchCategory = (CarCategory) objectInputStream.readObject();
 
-                                    boolean hasDeleted = appStub.deleteCar(deletionType, deletableCarName);
-                                    objectOutputStream.writeBoolean(hasDeleted);
+                                    ArrayList<Car> carList = appStub.getAllCars(searchType, searchCategory);
+                                    objectOutputStream.writeObject(carList);
                                     objectOutputStream.flush();
                                     break;
-                                case 3:
-
-                                    break;
-                                case 4:
-
-                                    break;
-                                case 5:
+                                case 2:
                                     CarSearchType carSearchType = (CarSearchType) objectInputStream.readObject();
                                     String searchTerm = objectInputStream.readUTF();
 
@@ -84,13 +76,36 @@ public class GatewayThread extends Thread {
                                     objectOutputStream.flush();
 
                                     break;
-                                case 6:
+                                case 3:
                                     int availableCarsQuantity = appStub.getCarsQuantity();
                                     objectOutputStream.writeInt(availableCarsQuantity);
                                     objectOutputStream.flush();
                                     break;
-                                case 7:
+                                case 4:
 
+                                    break;
+                                case 5:
+                                    Car createdCar = (Car) objectInputStream.readObject();
+                                    appStub.postCar(createdCar);
+                                    break;
+                                case 6:
+                                    int deletionType = objectInputStream.readInt();
+                                    String deletableCarName = objectInputStream.readUTF();
+
+                                    boolean hasDeleted = appStub.deleteCar(deletionType, deletableCarName);
+                                    objectOutputStream.writeBoolean(hasDeleted);
+                                    objectOutputStream.flush();
+                                    break;
+                                case 7:
+                                    CarSearchType updateCarSearchType = (CarSearchType) objectInputStream.readObject();
+                                    String updateCarSearchTerm = objectInputStream.readUTF();
+
+                                    int foundedCarIndex = appStub.getCarIndex(updateCarSearchTerm, updateCarSearchType);
+                                    objectOutputStream.writeInt(foundedCarIndex);
+                                    objectOutputStream.flush();
+
+                                    Car updatedCar = (Car) objectInputStream.readObject();
+                                    appStub.putCar(updatedCar, foundedCarIndex);
                                     break;
 
                                 case 0:

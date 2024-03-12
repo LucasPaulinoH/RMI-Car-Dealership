@@ -73,7 +73,8 @@ public class Car implements Serializable {
 
     @Override
     public String toString() {
-        return "[name=" + name + ", category=" + category + ", renavam=" + renavam + ", manufactureYear="
-                + manufactureYear + ", price=" + price + ", quantity=" + quantity + "]";
+        return "=========================\n" + name.toUpperCase() + " (" + manufactureYear + ")\nRenavam: " + renavam
+                + "\nCategory: " + category
+                + "\nPrice (R$): " + price + "\nQuantity: " + quantity + "\n=========================\n";
     }
 }

@@ -41,6 +41,7 @@ public class ClientThread extends Thread {
 
                 objectOutputStream.writeInt(loginOrRegister);
 
+                TerminalPrints.clearConsole();
                 switch (loginOrRegister) {
                     case 1:
                         executeLoginAttempt();
@@ -51,6 +52,7 @@ public class ClientThread extends Thread {
                             continue;
                         }
 
+                        TerminalPrints.clearConsole();
                         LoggedUserProcess loggedUserProcess;
                         if (loggedUser instanceof Employee) {
                             loggedUserProcess = new LoggedUserProcess(loggedUser, AccountType.EMPLOYEE,

@@ -4,7 +4,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import model.Car;
+import types.Types.CarCategory;
 import types.Types.CarSearchType;
+import java.util.ArrayList;
 
 public interface ApplicationInterface extends Remote {
     void postCar(Car newCar) throws RemoteException;
@@ -13,9 +15,11 @@ public interface ApplicationInterface extends Remote {
 
     Car getCar(String searchTerm, CarSearchType carSearchType) throws RemoteException;
 
-    void putCar() throws RemoteException;
+    int getCarIndex(String searchTerm, CarSearchType carSearchType) throws RemoteException;
 
-    void getAllCars(CarSearchType carSearchType) throws RemoteException;
+    void putCar(Car updatedCar, int foundedCarIndex) throws RemoteException;
+
+    ArrayList<Car> getAllCars(CarSearchType carSearchType, CarCategory carCategory) throws RemoteException;
 
     int getCarsQuantity() throws RemoteException;
 

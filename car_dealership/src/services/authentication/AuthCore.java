@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import dto.account.LoginDTO;
 import dto.account.RegisterDTO;
+import model.Customer;
 import model.Employee;
 import model.User;
 
@@ -12,7 +13,9 @@ public class AuthCore implements AuthInterface {
     private ArrayList<User> registeredUsers = new ArrayList<>();
 
     public AuthCore() {
-        this.registeredUsers.add(new Employee("lucas",
+        this.registeredUsers.add(new Customer("lucas1",
+                "77+9Ou+/ve+/ve+/vW/Fhe+/ve+/vRgS77+977+9PO+/vWHvv73vv71kPu+/ve+/vT/vv70Qa2I3Je+/vWc="));
+        this.registeredUsers.add(new Employee("lucas2",
                 "77+9Ou+/ve+/ve+/vW/Fhe+/ve+/vRgS77+977+9PO+/vWHvv73vv71kPu+/ve+/vT/vv70Qa2I3Je+/vWc=", "seller"));
     }
 

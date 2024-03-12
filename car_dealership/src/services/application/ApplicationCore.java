@@ -2,13 +2,20 @@ package services.application;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import model.Car;
+import types.Types.CarCategory;
 import types.Types.CarSearchType;
 
 public class ApplicationCore implements ApplicationInterface {
     private ArrayList<Car> registeredCars = new ArrayList<>();
     private int totalCarQuantity = 0;
+
+    public ApplicationCore() throws RemoteException {
+        this.postCar(new Car("Lancer", CarCategory.INTERMEDIATE, "12345678910", "2016", 60000, 2));
+    }
 
     @Override
     public void postCar(Car newCar) throws RemoteException {
@@ -29,7 +36,7 @@ public class ApplicationCore implements ApplicationInterface {
             totalCarQuantity += newCar.getQuantity();
         }
 
-        System.out.println(newCar.toString() + " has been added.");
+        System.out.println(newCar.getName() + " has been added.");
     }
 
     @Override
@@ -41,7 +48,11 @@ public class ApplicationCore implements ApplicationInterface {
             if (iterableCar.getName().equalsIgnoreCase(carName)) {
                 if (deletionType == 1) {
                     iterableCar.setQuantity(iterableCar.getQuantity() - 1);
+                    if (iterableCar.getQuantity() == 0)
+                        registeredCars.remove(i);
+
                     totalCarQuantity--;
+
                 } else {
                     totalCarQuantity -= iterableCar.getQuantity();
                     registeredCars.remove(i);
@@ -73,15 +84,40 @@ public class ApplicationCore implements ApplicationInterface {
     }
 
     @Override
-    public void putCar() throws RemoteException {
+    public void putCar(Car updatedCar, int foundedCarIndex) throws RemoteException {
+        totalCarQuantity -= registeredCars.get(foundedCarIndex).getQuantity();
+        registeredCars.set(foundedCarIndex, updatedCar);
+        totalCarQuantity += updatedCar.getQuantity();
 
+        System.out.println(foundedCarIndex + "(index) car sucessfully updated.");
     }
 
     @Override
-    public void getAllCars(CarSearchType carSearchType) throws RemoteException {
-        for (Car iterableCar : registeredCars) {
-            System.out.println(iterableCar.toString());
+    public ArrayList<Car> getAllCars(CarSearchType carSearchType, CarCategory carCategory) throws RemoteException {
+        ArrayList<Car> filteredCars = null;
+        sortCarListAlphabetically(registeredCars);
+
+        switch (carSearchType) {
+            case GENERAL:
+                filteredCars = registeredCars;
+                break;
+
+            case CATEGORY:
+                switch (carCategory) {
+                    case ECONOMIC:
+                        filteredCars = getEspecificCategoryCarsFromList(registeredCars, CarCategory.ECONOMIC);
+                        break;
+                    case INTERMEDIATE:
+                        filteredCars = getEspecificCategoryCarsFromList(registeredCars, CarCategory.INTERMEDIATE);
+                        break;
+                    case EXECUTIVE:
+                        filteredCars = getEspecificCategoryCarsFromList(registeredCars, CarCategory.EXECUTIVE);
+                        break;
+                }
+                break;
         }
+
+        return filteredCars;
     }
 
     @Override
@@ -94,4 +130,46 @@ public class ApplicationCore implements ApplicationInterface {
 
     }
 
+    private void sortCarListAlphabetically(ArrayList<Car> carList) {
+        Collections.sort(carList, new Comparator<Car>() {
+            @Override
+            public int compare(Car car1, Car car2) {
+                return car1.getName().compareTo(car2.getName());
+            }
+        });
+    }
+
+    private ArrayList<Car> getEspecificCategoryCarsFromList(ArrayList<Car> carList, CarCategory carCategory) {
+        ArrayList<Car> resultingList = new ArrayList<>();
+
+        for (Car iterableCar : carList) {
+            if (iterableCar.getCategory() == carCategory)
+                resultingList.add(iterableCar);
+        }
+
+        return resultingList;
+    }
+
+    @Override
+    public int getCarIndex(String searchTerm, CarSearchType carSearchType) throws RemoteException {
+        int foundedCarIndex = -1;
+
+        for (int i = 0; i < registeredCars.size(); i++) {
+            switch (carSearchType) {
+                case NAME:
+                    if (registeredCars.get(i).getName().equalsIgnoreCase(searchTerm)) {
+                        foundedCarIndex = i;
+                        break;
+                    }
+
+                case RENAVAM:
+                    if (registeredCars.get(i).getName().equalsIgnoreCase(searchTerm)) {
+                        foundedCarIndex = i;
+                        break;
+                    }
+            }
+        }
+
+        return foundedCarIndex;
+    }
 }

@@ -2,13 +2,14 @@ package utils;
 
 public class TerminalPrints {
     public static void printLoggedEmployeeOptions() {
-        System.out.println("(1) - Add new car" +
-                "\n(2) - Delete car" +
-                "\n(3) - Update car info" +
-                "\n(4) - List all cars" +
-                "\n(5) - Search for car" +
-                "\n(6) - Show car quantity" +
-                "\n(7) - Buy a car" + "\n\n(0) - exit");
+        System.out.println(
+                "(1) - List all cars" +
+                        "\n(2) - Search for car" +
+                        "\n(3) - Show car quantity" +
+                        "\n(4) - Buy a car" +
+                        "\n(5) - Add new car" +
+                        "\n(6) - Delete car" +
+                        "\n(7) - Update car info" + "\n\n(0) - exit");
         System.out.print("> ");
     }
 
@@ -23,5 +24,10 @@ public class TerminalPrints {
     public static void printUnloggedUserOptions() {
         System.out.println("(1) - Login\n(2) - Register\n\n(0) - exit");
         System.out.print("> ");
+    }
+
+    public static synchronized void clearConsole() {
+        System.out.println("\033[H\033[2J");
+        System.out.flush();
     }
 }
