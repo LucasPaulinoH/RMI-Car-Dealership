@@ -44,6 +44,7 @@ public class ClientThread extends Thread {
                 TerminalPrints.clearConsole();
                 switch (loginOrRegister) {
                     case 1:
+
                         System.out.print("Login > ");
                         String login = sc.next();
 
@@ -57,6 +58,7 @@ public class ClientThread extends Thread {
 
                         User loggedUser = (User) objectInputStream.readObject();
 
+                        TerminalPrints.clearConsole();
                         if (loggedUser == null) {
                             System.out.println("Invalid login credentials.");
                             continue;

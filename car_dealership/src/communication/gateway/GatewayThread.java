@@ -16,6 +16,8 @@ import model.User;
 import services.application.ApplicationInterface;
 import services.application.ApplicationService;
 import services.authentication.AuthInterface;
+import services.authentication.AuthService;
+import types.Types.AccountType;
 import types.Types.CarCategory;
 import types.Types.CarSearchType;
 import java.util.ArrayList;
@@ -24,12 +26,9 @@ public class GatewayThread extends Thread {
     private ObjectInputStream objectInputStream;
     private Socket clientConnectionSocket;
 
-    private AuthInterface authStub;
-
-    public GatewayThread(ObjectInputStream objectInputStream, AuthInterface remoteClientStub,
-            Socket clientConnectionSocket) {
+    public GatewayThread(ObjectInputStream objectInputStream, Socket clientConnectionSocket) {
         this.objectInputStream = objectInputStream;
-        this.authStub = remoteClientStub;
+
         this.clientConnectionSocket = clientConnectionSocket;
     }
 
@@ -37,6 +36,10 @@ public class GatewayThread extends Thread {
     public void run() {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientConnectionSocket.getOutputStream());
+
+            new AuthService();
+            Registry authRegistry = LocateRegistry.getRegistry(Constants.AUTH_REGISTRY_PORT);
+            var authStub = (AuthInterface) authRegistry.lookup(Constants.AUTH_SERVICE_NAME);
 
             while (true) {
                 int loginOrRegisterSelected = objectInputStream.readInt();
@@ -87,32 +90,51 @@ public class GatewayThread extends Thread {
                                     objectOutputStream.flush();
                                     break;
                                 case 4:
+                                    CarSearchType buyCarSearchType = (CarSearchType) objectInputStream.readObject();
+                                    String buyCarSearchTerm = objectInputStream.readUTF();
 
+                                    Car boughtFoundedCar = appStub.buyCar(loggedUser.getId(), buyCarSearchTerm,
+                                            buyCarSearchType);
+
+                                    objectOutputStream.writeObject(boughtFoundedCar);
+                                    objectOutputStream.flush();
                                     break;
+
                                 case 5:
-                                    Car createdCar = (Car) objectInputStream.readObject();
-                                    appStub.postCar(createdCar);
+                                    if (loggedUser.getAccountType() == AccountType.EMPLOYEE) {
+                                        Car createdCar = (Car) objectInputStream.readObject();
+                                        appStub.postCar(createdCar);
+                                    }
                                     break;
                                 case 6:
-                                    int deletionType = objectInputStream.readInt();
-                                    String deletableCarName = objectInputStream.readUTF();
+                                    if (loggedUser.getAccountType() == AccountType.EMPLOYEE) {
+                                        int deletionType = objectInputStream.readInt();
+                                        String deletableCarName = objectInputStream.readUTF();
 
-                                    boolean hasDeleted = appStub.deleteCar(deletionType, deletableCarName);
-                                    objectOutputStream.writeBoolean(hasDeleted);
-                                    objectOutputStream.flush();
+                                        boolean hasDeleted = appStub.deleteCar(deletionType, deletableCarName);
+                                        objectOutputStream.writeBoolean(hasDeleted);
+                                        objectOutputStream.flush();
+                                    }
                                     break;
                                 case 7:
-                                    CarSearchType updateCarSearchType = (CarSearchType) objectInputStream.readObject();
-                                    String updateCarSearchTerm = objectInputStream.readUTF();
+                                    if (loggedUser.getAccountType() == AccountType.EMPLOYEE) {
+                                        CarSearchType updateCarSearchType = (CarSearchType) objectInputStream
+                                                .readObject();
+                                        String updateCarSearchTerm = objectInputStream.readUTF();
 
-                                    int foundedCarIndex = appStub.getCarIndex(updateCarSearchTerm, updateCarSearchType);
-                                    objectOutputStream.writeInt(foundedCarIndex);
-                                    objectOutputStream.flush();
+                                        int foundedCarIndex = appStub.getCarIndex(updateCarSearchTerm,
+                                                updateCarSearchType);
+                                        objectOutputStream.writeInt(foundedCarIndex);
+                                        objectOutputStream.flush();
 
-                                    Car updatedCar = (Car) objectInputStream.readObject();
-                                    appStub.putCar(updatedCar, foundedCarIndex);
+                                        if (foundedCarIndex == -1)
+                                            break;
+
+                                        Car updatedCar = (Car) objectInputStream.readObject();
+                                        appStub.putCar(updatedCar, foundedCarIndex);
+                                        break;
+                                    }
                                     break;
-
                                 case 0:
                                     continue;
                                 default:

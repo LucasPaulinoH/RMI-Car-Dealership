@@ -22,6 +22,7 @@ public class TerminalPrints {
     }
 
     public static void printUnloggedUserOptions() {
+        System.out.println("===================");
         System.out.println("(1) - Login\n(2) - Register\n\n(0) - exit");
         System.out.print("> ");
     }
@@ -29,5 +30,9 @@ public class TerminalPrints {
     public static synchronized void clearConsole() {
         System.out.println("\033[H\033[2J");
         System.out.flush();
+    }
+
+    public static void printDealershipLogo() {
+        System.out.println("CAR DEALERSHIP\n==============\n");
     }
 }

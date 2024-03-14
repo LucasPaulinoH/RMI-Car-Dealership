@@ -31,7 +31,10 @@ public class LoggedUserProcess {
 
     private void executeLoggedUserProcess() {
         try {
+            TerminalPrints.clearConsole();
             while (true) {
+                TerminalPrints.printDealershipLogo();
+
                 if (accountType == AccountType.CUSTOMER)
                     TerminalPrints.printLoggedCustomerOptions();
                 else
@@ -43,6 +46,7 @@ public class LoggedUserProcess {
                 objectOutputStream.flush();
 
                 TerminalPrints.clearConsole();
+
                 switch (selectedOption) {
                     case 1:
                         int carListSearchTypeInt;
@@ -93,6 +97,9 @@ public class LoggedUserProcess {
                         objectOutputStream.writeObject(searchCategory);
                         objectOutputStream.flush();
 
+                        TerminalPrints.clearConsole();
+                        System.out.println("AVAILABLE CARS:");
+
                         ArrayList<Car> searchedCars = (ArrayList<Car>) objectInputStream.readObject();
 
                         if (searchedCars.size() == 0) {
@@ -105,28 +112,42 @@ public class LoggedUserProcess {
 
                         continue;
                     case 2:
+                        TerminalPrints.clearConsole();
                         searchCarRequest(objectOutputStream);
+                        TerminalPrints.clearConsole();
 
                         try {
                             Car foundedUser = (Car) objectInputStream.readObject();
 
-                            if (foundedUser != null)
+                            if (foundedUser != null) {
+                                System.out.println("FOUNDED CAR: ");
                                 System.out.println(foundedUser.toString());
-                            else
-                                System.out.println("No car found.");
+                            } else
+                                System.out.println("No car found.\n");
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
 
                         continue;
                     case 3:
-
+                        TerminalPrints.clearConsole();
                         int availableCarsQuantity = objectInputStream.readInt();
-                        System.out.println("Available cars: " + availableCarsQuantity);
+                        System.out.println("AVAILABLE CARS: " + availableCarsQuantity + "\n");
                         continue;
                     case 4:
+                        TerminalPrints.clearConsole();
+                        searchCarRequest(objectOutputStream);
+                        TerminalPrints.clearConsole();
 
-                        break;
+                        Car foundedBoughtCar = (Car) objectInputStream.readObject();
+
+                        if (foundedBoughtCar != null)
+                            System.out.println(foundedBoughtCar.getName() + " successfully purchased.\n");
+                        else
+                            System.out.println("No car found.\n");
+
+                        continue;
+
                     case 5:
                         if (accountType == AccountType.EMPLOYEE) {
                             Car newCar = addCarRequest();
@@ -134,7 +155,8 @@ public class LoggedUserProcess {
                             objectOutputStream.writeObject(newCar);
                             objectOutputStream.flush();
 
-                            System.out.println(newCar.getName() + " successfully added.");
+                            TerminalPrints.clearConsole();
+                            System.out.println(newCar.getName() + " successfully added.\n");
                             continue;
                         } else {
                             System.out.println("Invalid option selected.");
@@ -145,11 +167,12 @@ public class LoggedUserProcess {
                             deleteCarRequest(objectOutputStream);
 
                             boolean hasDeleted = (boolean) objectInputStream.readBoolean();
+                            TerminalPrints.clearConsole();
 
                             if (hasDeleted)
-                                System.out.println("Successfully deleted.");
+                                System.out.println("Successfully deleted.\n");
                             else
-                                System.out.println("Given car is not registered.");
+                                System.out.println("Given car is not registered.\n");
 
                             continue;
                         } else {
@@ -163,19 +186,23 @@ public class LoggedUserProcess {
                             int foundedCarIndex = objectInputStream.readInt();
 
                             if (foundedCarIndex == -1) {
-                                System.out.println("Searched car is not registered.");
+                                TerminalPrints.clearConsole();
+                                System.out.println("No car found.\n");
                                 continue;
                             }
 
+                            System.out.println("\nUPDATE CAR INFO:\n================");
                             Car updatedCar = addCarRequest();
                             objectOutputStream.writeObject(updatedCar);
                             objectOutputStream.flush();
+
+                            TerminalPrints.clearConsole();
+                            System.out.println("Searched car successfully edited.\n");
+                            continue;
                         } else {
                             System.out.println("Invalid option selected.");
                             continue;
                         }
-
-                        continue;
 
                     case 0:
                         break;
@@ -229,8 +256,6 @@ public class LoggedUserProcess {
 
         System.out.println("Quantity > ");
         int quantity = sc.nextInt();
-
-
 
         return new Car(newCarName, category, renavam, manufactureYear, price, quantity);
     }
@@ -287,7 +312,7 @@ public class LoggedUserProcess {
 
                 default:
                     System.out.println(
-                            "Invalid search type selected. Try 1 for Name, 2 for Renavame.");
+                            "Invalid search type selected. Try 1 for Name, 2 for Renavam.\n");
                     continue;
             }
         }

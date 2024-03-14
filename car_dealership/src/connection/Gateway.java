@@ -27,9 +27,6 @@ public class Gateway {
 
     private void executeGatewayProcess() {
         try {
-            new AuthService();
-            Registry authRegistry = LocateRegistry.getRegistry(Constants.AUTH_REGISTRY_PORT);
-            var remoteClientStub = (AuthInterface) authRegistry.lookup(Constants.AUTH_SERVICE_NAME);
 
             try {
                 serverSocket = new ServerSocket(serverPort);
@@ -41,7 +38,7 @@ public class Gateway {
 
                     objectInputStream = new ObjectInputStream(clientConnectionSocket.getInputStream());
 
-                    var gatewayThread = new GatewayThread(objectInputStream, remoteClientStub, clientConnectionSocket);
+                    var gatewayThread = new GatewayThread(objectInputStream,  clientConnectionSocket);
                     gatewayThread.start();
                 }
             } catch (IOException e) {

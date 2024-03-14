@@ -4,13 +4,14 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
 import model.Car;
 import types.Types.CarCategory;
 import types.Types.CarSearchType;
+import java.util.UUID;
 
 public class ApplicationCore implements ApplicationInterface {
     private ArrayList<Car> registeredCars = new ArrayList<>();
+
     private int totalCarQuantity = 0;
 
     public ApplicationCore() throws RemoteException {
@@ -29,7 +30,7 @@ public class ApplicationCore implements ApplicationInterface {
     }
 
     @Override
-    public void postCar(Car newCar) throws RemoteException {
+    public synchronized void postCar(Car newCar) throws RemoteException {
         boolean hasPostedCar = false;
         for (Car iterableCar : registeredCars) {
             if (newCar.getName().equalsIgnoreCase(iterableCar.getName())
@@ -51,7 +52,7 @@ public class ApplicationCore implements ApplicationInterface {
     }
 
     @Override
-    public boolean deleteCar(int deletionType, String carName) throws RemoteException {
+    public synchronized boolean deleteCar(int deletionType, String carName) throws RemoteException {
         Car iterableCar = null;
         for (int i = 0; i < registeredCars.size(); i++) {
             iterableCar = registeredCars.get(i);
@@ -95,9 +96,10 @@ public class ApplicationCore implements ApplicationInterface {
     }
 
     @Override
-    public void putCar(Car updatedCar, int foundedCarIndex) throws RemoteException {
+    public synchronized void putCar(Car updatedCar, int foundedCarIndex) throws RemoteException {
         totalCarQuantity -= registeredCars.get(foundedCarIndex).getQuantity();
         registeredCars.set(foundedCarIndex, updatedCar);
+
         totalCarQuantity += updatedCar.getQuantity();
 
         System.out.println(foundedCarIndex + "(index) car sucessfully updated.");
@@ -107,7 +109,7 @@ public class ApplicationCore implements ApplicationInterface {
     public ArrayList<Car> getAllCars(CarSearchType carSearchType, CarCategory carCategory) throws RemoteException {
         ArrayList<Car> filteredCars = null;
         sortCarListAlphabetically(registeredCars);
-
+        
         switch (carSearchType) {
             case GENERAL:
                 filteredCars = registeredCars;
@@ -137,15 +139,36 @@ public class ApplicationCore implements ApplicationInterface {
     }
 
     @Override
-    public void buyCar() throws RemoteException {
+    public synchronized Car buyCar(UUID userId, String buyCarSearchTerm, CarSearchType buyCarSearchType)
+            throws RemoteException {
+        Car purchasedCar = null;
+        Car iterableCar = null;
 
+        for (int i = 0; i < registeredCars.size(); i++) {
+            iterableCar = registeredCars.get(i);
+
+            if (iterableCar.getName().equalsIgnoreCase(buyCarSearchTerm)
+                    || iterableCar.getRenavam().equalsIgnoreCase(buyCarSearchTerm)) {
+                iterableCar.setQuantity(iterableCar.getQuantity() - 1);
+
+                if (iterableCar.getQuantity() == 0)
+                    registeredCars.remove(i);
+
+                purchasedCar = iterableCar;
+                totalCarQuantity--;
+                System.out.println(userId + " has purchased a " + purchasedCar.getName());
+                return purchasedCar;
+            }
+        }
+
+        return null;
     }
 
     private void sortCarListAlphabetically(ArrayList<Car> carList) {
         Collections.sort(carList, new Comparator<Car>() {
             @Override
             public int compare(Car car1, Car car2) {
-                return car1.getName().compareTo(car2.getName());
+                return car1.getName().toUpperCase().compareTo(car2.getName().toUpperCase());
             }
         });
     }
