@@ -4,19 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.rmi.NotBoundException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
-import constants.Constants;
 import dto.account.LoginDTO;
 import dto.account.RegisterDTO;
 import model.Car;
 import model.User;
 import services.application.ApplicationInterface;
-import services.application.ApplicationService;
 import services.authentication.AuthInterface;
-import services.authentication.AuthService;
 import types.Types.AccountType;
 import types.Types.CarCategory;
 import types.Types.CarSearchType;
@@ -25,21 +18,21 @@ import java.util.ArrayList;
 public class GatewayThread extends Thread {
     private ObjectInputStream objectInputStream;
     private Socket clientConnectionSocket;
+    private AuthInterface authStub;
+    private ApplicationInterface appStub;
 
-    public GatewayThread(ObjectInputStream objectInputStream, Socket clientConnectionSocket) {
+    public GatewayThread(ObjectInputStream objectInputStream, Socket clientConnectionSocket, AuthInterface authStub,
+            ApplicationInterface appStub) {
         this.objectInputStream = objectInputStream;
-
         this.clientConnectionSocket = clientConnectionSocket;
+        this.authStub = authStub;
+        this.appStub = appStub;
     }
 
     @Override
     public void run() {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientConnectionSocket.getOutputStream());
-
-            new AuthService();
-            Registry authRegistry = LocateRegistry.getRegistry(Constants.AUTH_REGISTRY_PORT);
-            var authStub = (AuthInterface) authRegistry.lookup(Constants.AUTH_SERVICE_NAME);
 
             while (true) {
                 int loginOrRegisterSelected = objectInputStream.readInt();
@@ -56,10 +49,6 @@ public class GatewayThread extends Thread {
 
                         if (loggedUser == null)
                             continue;
-
-                        new ApplicationService();
-                        Registry appRegistry = LocateRegistry.getRegistry(Constants.APP_REGISTRY_PORT);
-                        var appStub = (ApplicationInterface) appRegistry.lookup(Constants.APP_SERVICE_NAME);
 
                         int selectedOption = 1;
                         while (selectedOption != 0) {
@@ -153,7 +142,7 @@ public class GatewayThread extends Thread {
                         break;
                 }
             }
-        } catch (IOException | ClassNotFoundException | NotBoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 

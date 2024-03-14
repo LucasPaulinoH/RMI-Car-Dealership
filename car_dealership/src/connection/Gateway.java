@@ -9,6 +9,8 @@ import java.rmi.registry.Registry;
 
 import communication.gateway.GatewayThread;
 import constants.Constants;
+import services.application.ApplicationInterface;
+import services.application.ApplicationService;
 import services.authentication.AuthInterface;
 import services.authentication.AuthService;
 
@@ -32,13 +34,21 @@ public class Gateway {
                 serverSocket = new ServerSocket(serverPort);
                 System.out.println("Gateway is running. Waiting for client connections...");
 
+                new AuthService();
+                Registry authRegistry = LocateRegistry.getRegistry(Constants.AUTH_REGISTRY_PORT);
+                var authStub = (AuthInterface) authRegistry.lookup(Constants.AUTH_SERVICE_NAME);
+
+                new ApplicationService();
+                Registry appRegistry = LocateRegistry.getRegistry(Constants.APP_REGISTRY_PORT);
+                var appStub = (ApplicationInterface) appRegistry.lookup(Constants.APP_SERVICE_NAME);
+
                 while (true) {
                     clientConnectionSocket = serverSocket.accept();
                     System.out.println("A client has connected.");
 
                     objectInputStream = new ObjectInputStream(clientConnectionSocket.getInputStream());
 
-                    var gatewayThread = new GatewayThread(objectInputStream,  clientConnectionSocket);
+                    var gatewayThread = new GatewayThread(objectInputStream, clientConnectionSocket, authStub, appStub);
                     gatewayThread.start();
                 }
             } catch (IOException e) {
