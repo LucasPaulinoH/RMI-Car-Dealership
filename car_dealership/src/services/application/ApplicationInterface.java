@@ -7,7 +7,6 @@ import model.Car;
 import types.Types.CarCategory;
 import types.Types.CarSearchType;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public interface ApplicationInterface extends Remote {
     public Car postCar(Car newCar) throws RemoteException;
@@ -24,5 +23,5 @@ public interface ApplicationInterface extends Remote {
 
     public int getCarsQuantity() throws RemoteException;
 
-    public Car buyCar(UUID userId, String buyCarSearchTerm, CarSearchType buyCarSearchType) throws RemoteException;
+    public boolean buyCar(String searchedRenavam) throws RemoteException;
 }

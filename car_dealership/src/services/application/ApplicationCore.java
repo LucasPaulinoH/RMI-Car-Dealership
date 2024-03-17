@@ -134,23 +134,10 @@ public class ApplicationCore implements ApplicationInterface {
     }
 
     @Override
-    public synchronized Car buyCar(UUID userId, String buyCarSearchTerm, CarSearchType buyCarSearchType)
+    public synchronized boolean buyCar(String searchedRenavam)
             throws RemoteException {
-        Car purchasedCar = null;
-        Car iterableCar = null;
-
-        for (int i = 0; i < registeredCars.size(); i++) {
-            iterableCar = registeredCars.get(i);
-
-            if (iterableCar.getName().equalsIgnoreCase(buyCarSearchTerm)
-                    || iterableCar.getRenavam().equalsIgnoreCase(buyCarSearchTerm)) {
-
-                System.out.println(userId + " has purchased a " + purchasedCar.getName());
-                return purchasedCar;
-            }
-        }
-
-        return null;
+        boolean hasPurchased = deleteCar(CarSearchType.RENAVAM, searchedRenavam);
+        return hasPurchased;
     }
 
     private void sortCarListAlphabetically(ArrayList<Car> carList) {

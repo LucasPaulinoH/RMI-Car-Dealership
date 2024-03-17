@@ -79,13 +79,11 @@ public class GatewayThread extends Thread {
                                     objectOutputStream.flush();
                                     break;
                                 case 4:
-                                    CarSearchType buyCarSearchType = (CarSearchType) objectInputStream.readObject();
-                                    String buyCarSearchTerm = objectInputStream.readUTF();
+                                    String purchasedCarRenavam = objectInputStream.readUTF();
 
-                                    Car boughtFoundedCar = appStub.buyCar(loggedUser.getId(), buyCarSearchTerm,
-                                            buyCarSearchType);
+                                    boolean hasPurchased = appStub.buyCar(purchasedCarRenavam);
 
-                                    objectOutputStream.writeObject(boughtFoundedCar);
+                                    objectOutputStream.writeBoolean(hasPurchased);
                                     objectOutputStream.flush();
                                     break;
 

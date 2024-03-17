@@ -139,13 +139,14 @@ public class LoggedUserProcess {
                         continue;
                     case 4:
                         TerminalPrints.clearConsole();
-                        searchCarRequest(objectOutputStream);
+
+                        requestCarRenavam(objectOutputStream);
                         TerminalPrints.clearConsole();
 
-                        Car foundedBoughtCar = (Car) objectInputStream.readObject();
+                        boolean hasPurchased = (boolean) objectInputStream.readBoolean();
 
-                        if (foundedBoughtCar != null)
-                            System.out.println(foundedBoughtCar.getName() + " successfully purchased.\n");
+                        if (hasPurchased)
+                            System.out.println("Searched car has been purchased.\n");
                         else
                             System.out.println("No car found.\n");
 
