@@ -117,11 +117,14 @@ public class LoggedUserProcess {
                         TerminalPrints.clearConsole();
 
                         try {
-                            Car foundedUser = (Car) objectInputStream.readObject();
+                            ArrayList<Car> foundedCars = (ArrayList<Car>) objectInputStream.readObject();
 
-                            if (foundedUser != null) {
-                                System.out.println("FOUNDED CAR: ");
-                                System.out.println(foundedUser.toString());
+                            if (foundedCars.size() > 0) {
+                                System.out.println("FOUNDED CARS (" + foundedCars.size() + "): ");
+
+                                for (Car iterableCar : foundedCars) {
+                                    System.out.println(iterableCar);
+                                }
                             } else
                                 System.out.println("No car found.\n");
                         } catch (ClassNotFoundException e) {
@@ -155,8 +158,16 @@ public class LoggedUserProcess {
                             objectOutputStream.writeObject(newCar);
                             objectOutputStream.flush();
 
+                            Car createdCar = (Car) objectInputStream.readObject();
                             TerminalPrints.clearConsole();
+
+                            if (createdCar == null) {
+                                System.out
+                                        .println("Can't register the car. This Renavam was already registered.");
+                                continue;
+                            }
                             System.out.println(newCar.getName() + " successfully added.\n");
+
                             continue;
                         } else {
                             System.out.println("Invalid option selected.");
@@ -164,7 +175,7 @@ public class LoggedUserProcess {
                         }
                     case 6:
                         if (accountType == AccountType.EMPLOYEE) {
-                            deleteCarRequest(objectOutputStream);
+                            searchCarRequest(objectOutputStream);
 
                             boolean hasDeleted = (boolean) objectInputStream.readBoolean();
                             TerminalPrints.clearConsole();
@@ -181,7 +192,7 @@ public class LoggedUserProcess {
                         }
                     case 7:
                         if (accountType == AccountType.EMPLOYEE) {
-                            searchCarRequest(objectOutputStream);
+                            requestCarRenavam(objectOutputStream);
 
                             int foundedCarIndex = objectInputStream.readInt();
 
@@ -197,7 +208,13 @@ public class LoggedUserProcess {
                             objectOutputStream.flush();
 
                             TerminalPrints.clearConsole();
-                            System.out.println("Searched car successfully edited.\n");
+
+                            boolean hasUpdated = (boolean) objectInputStream.readBoolean();
+
+                            if (hasUpdated)
+                                System.out.println("Searched car successfully edited.\n");
+                            else
+                                System.out.println("Invalid received Renavam for update.\n");
                             continue;
                         } else {
                             System.out.println("Invalid option selected.");
@@ -254,44 +271,19 @@ public class LoggedUserProcess {
         System.out.println("Price (R$) > ");
         double price = sc.nextDouble();
 
-        System.out.println("Quantity > ");
-        int quantity = sc.nextInt();
-
-        return new Car(newCarName, category, renavam, manufactureYear, price, quantity);
+        return new Car(newCarName, category, renavam, manufactureYear, price);
     }
 
-    private void deleteCarRequest(ObjectOutputStream objectOutputStream) {
-        int deletionType;
-
-        while (true) {
-            System.out.println("Deletion type (1 - unity, 2 - all unities) > ");
-            deletionType = sc.nextInt();
-
-            switch (deletionType) {
-                case 1:
-                    break;
-                case 2:
-                    break;
-                default:
-                    System.out.println(
-                            "Invalid deletion type. Type 1 to delete a single instance or 2 to delete all registries.");
-                    continue;
-            }
-
-            break;
-        }
-
-        System.out.print("Car name > ");
-        String deletedCarName = sc.next();
+    private void requestCarRenavam(ObjectOutputStream objectOutputStream) {
+        System.out.print("Renavam > ");
+        String searchTerm = sc.next();
 
         try {
-            objectOutputStream.writeInt(deletionType);
-            objectOutputStream.writeUTF(deletedCarName);
+            objectOutputStream.writeUTF(searchTerm);
             objectOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private void searchCarRequest(ObjectOutputStream objectOutputStream) {

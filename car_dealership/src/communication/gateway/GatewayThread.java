@@ -67,9 +67,9 @@ public class GatewayThread extends Thread {
                                     CarSearchType carSearchType = (CarSearchType) objectInputStream.readObject();
                                     String searchTerm = objectInputStream.readUTF();
 
-                                    Car foundedCar = appStub.getCar(searchTerm, carSearchType);
+                                    ArrayList<Car> foundedCars = appStub.getCar(searchTerm, carSearchType);
 
-                                    objectOutputStream.writeObject(foundedCar);
+                                    objectOutputStream.writeObject(foundedCars);
                                     objectOutputStream.flush();
 
                                     break;
@@ -91,28 +91,29 @@ public class GatewayThread extends Thread {
 
                                 case 5:
                                     if (loggedUser.getAccountType() == AccountType.EMPLOYEE) {
-                                        Car createdCar = (Car) objectInputStream.readObject();
-                                        appStub.postCar(createdCar);
+                                        Car createdCarDTO = (Car) objectInputStream.readObject();
+                                        Car createdCarResult = appStub.postCar(createdCarDTO);
+
+                                        objectOutputStream.writeObject(createdCarResult);
+                                        objectOutputStream.flush();
                                     }
                                     break;
                                 case 6:
                                     if (loggedUser.getAccountType() == AccountType.EMPLOYEE) {
-                                        int deletionType = objectInputStream.readInt();
-                                        String deletableCarName = objectInputStream.readUTF();
+                                        CarSearchType deleteCarSearchType = (CarSearchType) objectInputStream.readObject();
+                                        String deleteCarSearchTerm = objectInputStream.readUTF();
 
-                                        boolean hasDeleted = appStub.deleteCar(deletionType, deletableCarName);
+                                        boolean hasDeleted = appStub.deleteCar(deleteCarSearchType, deleteCarSearchTerm);
                                         objectOutputStream.writeBoolean(hasDeleted);
                                         objectOutputStream.flush();
                                     }
                                     break;
                                 case 7:
                                     if (loggedUser.getAccountType() == AccountType.EMPLOYEE) {
-                                        CarSearchType updateCarSearchType = (CarSearchType) objectInputStream
-                                                .readObject();
-                                        String updateCarSearchTerm = objectInputStream.readUTF();
+                                        String searchedCarRenavam = objectInputStream.readUTF();
 
-                                        int foundedCarIndex = appStub.getCarIndex(updateCarSearchTerm,
-                                                updateCarSearchType);
+                                        int foundedCarIndex = appStub.getCarIndexFromRenavam(searchedCarRenavam);
+
                                         objectOutputStream.writeInt(foundedCarIndex);
                                         objectOutputStream.flush();
 
@@ -120,7 +121,10 @@ public class GatewayThread extends Thread {
                                             break;
 
                                         Car updatedCar = (Car) objectInputStream.readObject();
-                                        appStub.putCar(updatedCar, foundedCarIndex);
+                                        boolean hasUpdated = appStub.putCar(updatedCar, foundedCarIndex);
+
+                                        objectOutputStream.writeBoolean(hasUpdated);
+                                        objectOutputStream.flush();
                                         break;
                                     }
                                     break;

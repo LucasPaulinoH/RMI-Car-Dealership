@@ -10,21 +10,19 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public interface ApplicationInterface extends Remote {
-    void postCar(Car newCar) throws RemoteException;
+    public Car postCar(Car newCar) throws RemoteException;
 
-    boolean deleteCar(int deletionType, String carName) throws RemoteException;
+    public boolean deleteCar(CarSearchType deleteType, String searchTerm) throws RemoteException;
 
-    Car getCar(String searchTerm, CarSearchType carSearchType) throws RemoteException;
+    public ArrayList<Car> getCar(String searchTerm, CarSearchType carSearchType) throws RemoteException;
 
-    int getCarIndex(String searchTerm, CarSearchType carSearchType) throws RemoteException;
+    public int getCarIndexFromRenavam(String searchedRenavam) throws RemoteException;
 
-    void putCar(Car updatedCar, int foundedCarIndex) throws RemoteException;
+    public boolean putCar(Car updatedCar, int foundedCarIndex) throws RemoteException;
 
-    ArrayList<Car> getAllCars(CarSearchType carSearchType, CarCategory carCategory) throws RemoteException;
+    public ArrayList<Car> getAllCars(CarSearchType carSearchType, CarCategory carCategory) throws RemoteException;
 
-    int getCarsQuantity() throws RemoteException;
+    public int getCarsQuantity() throws RemoteException;
 
-    Car buyCar(UUID userId, String buyCarSearchTerm, CarSearchType buyCarSearchType) throws RemoteException;
-
-
+    public Car buyCar(UUID userId, String buyCarSearchTerm, CarSearchType buyCarSearchType) throws RemoteException;
 }

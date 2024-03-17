@@ -12,15 +12,13 @@ public class Car implements Serializable {
     private String renavam;
     private String manufactureYear;
     private double price;
-    private int quantity;
 
-    public Car(String name, CarCategory category, String renavam, String manufactureYear, double price, int quantity) {
+    public Car(String name, CarCategory category, String renavam, String manufactureYear, double price) {
         this.name = name;
         this.category = category;
         this.renavam = renavam;
         this.manufactureYear = manufactureYear;
         this.price = price;
-        this.quantity = quantity;
     }
 
     public String getName() {
@@ -63,18 +61,10 @@ public class Car implements Serializable {
         this.price = price;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     @Override
     public String toString() {
         return "=========================\n" + name.toUpperCase() + " (" + manufactureYear + ")\nRenavam: " + renavam
                 + "\nCategory: " + category
-                + "\nPrice (R$): " + price + "\nQuantity: " + quantity + "\n=========================\n";
+                + "\nPrice (R$): " + price + "\n=========================\n";
     }
 }
